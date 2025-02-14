@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MatrixTable } from './MatrixTable';
 import { ParameterSelector } from './ParameterSelector';
 import { OperatorButton } from './OperatorButton';
-import { Plus, Minus, Divide, X, Equal, GreaterThan, LessThan } from 'lucide-react';
+import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft } from 'lucide-react';
 
 export const Calculator = () => {
   const [showMatrix, setShowMatrix] = useState(false);
@@ -24,8 +24,8 @@ export const Calculator = () => {
               <OperatorButton icon={Minus} label="-" />
               <OperatorButton icon={X} label="×" />
               <OperatorButton icon={Divide} label="÷" />
-              <OperatorButton icon={LessThan} label="<" />
-              <OperatorButton icon={GreaterThan} label=">" />
+              <OperatorButton icon={ChevronLeft} label="<" />
+              <OperatorButton icon={ChevronRight} label=">" />
               <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
                 {"<="}
               </Button>
