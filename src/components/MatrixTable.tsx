@@ -1,0 +1,59 @@
+
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { X } from 'lucide-react';
+
+interface MatrixTableProps {
+  onClose: () => void;
+}
+
+export const MatrixTable = ({ onClose }: MatrixTableProps) => {
+  const matrixData = [
+    { code: 'MAT001', description: 'Prix standard', dimension: 1, fieldName: 'Prix prestation', unit: 'CHF' },
+    { code: 'MAT002', description: 'Volume', dimension: 2, fieldName: 'Volume prestation', unit: 'm³' },
+  ];
+
+  return (
+    <Card className="p-6 bg-white/95 backdrop-blur-sm animate-slideIn">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-xl font-semibold text-gray-800">Sélection Matrice</h3>
+        <Button variant="ghost" size="icon" onClick={onClose}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="mb-4">
+        <Input type="text" placeholder="Rechercher..." className="w-full" />
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Code</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Description</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Dimension</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Nom du champ</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Unité</th>
+            </tr>
+          </thead>
+          <tbody>
+            {matrixData.map((item, index) => (
+              <tr 
+                key={item.code}
+                className="border-t border-gray-100 hover:bg-violet-50 transition-colors cursor-pointer"
+              >
+                <td className="px-4 py-3 text-sm text-gray-700">{item.code}</td>
+                <td className="px-4 py-3 text-sm text-gray-700">{item.description}</td>
+                <td className="px-4 py-3 text-sm text-gray-700">{item.dimension}</td>
+                <td className="px-4 py-3 text-sm text-gray-700">{item.fieldName}</td>
+                <td className="px-4 py-3 text-sm text-gray-700">{item.unit}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+};
