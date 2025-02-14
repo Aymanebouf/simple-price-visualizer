@@ -2,15 +2,15 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { MatrixTable } from './MatrixTable';
 import { ParameterSelector } from './ParameterSelector';
 import { OperatorButton } from './OperatorButton';
-import { Plus, Minus, Divide, X } from 'lucide-react';
+import { Plus, Minus, Divide, X, Equal, GreaterThan, LessThan } from 'lucide-react';
 
 export const Calculator = () => {
   const [showMatrix, setShowMatrix] = useState(false);
   const [showParameters, setShowParameters] = useState(false);
+  const [formula, setFormula] = useState('');
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-6 animate-fadeIn">
@@ -19,42 +19,69 @@ export const Calculator = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-2">
+              <OperatorButton icon={Plus} label="+" />
+              <OperatorButton icon={Minus} label="-" />
+              <OperatorButton icon={X} label="×" />
+              <OperatorButton icon={Divide} label="÷" />
+              <OperatorButton icon={LessThan} label="<" />
+              <OperatorButton icon={GreaterThan} label=">" />
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                {"<="}
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                {">="}
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                {"<>"}
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                AND
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                OR
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                {"="}
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                (
+              </Button>
+              <Button variant="ghost" className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200">
+                )
+              </Button>
+            </div>
+
             <div className="flex space-x-2">
-              <Input 
-                type="number" 
-                placeholder="Valeur" 
-                className="text-lg"
-              />
               <Button 
                 variant="outline"
-                className="hover:bg-violet-50 transition-colors"
+                className="w-full hover:bg-violet-50 transition-colors"
                 onClick={() => setShowParameters(true)}
               >
                 Paramètre
               </Button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <OperatorButton icon={Plus} label="Addition" />
-              <OperatorButton icon={Minus} label="Soustraction" />
-              <OperatorButton icon={X} label="Multiplication" />
-              <OperatorButton icon={Divide} label="Division" />
-            </div>
-
-            <div className="flex justify-between items-center mt-6">
               <Button 
                 variant="outline"
                 className="w-full hover:bg-violet-50 transition-colors"
                 onClick={() => setShowMatrix(true)}
               >
-                Voir la Matrice
+                Matrice
               </Button>
             </div>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium text-gray-700 mb-4">Résultat</h3>
-            <div className="text-3xl font-semibold text-violet-600">0.00</div>
+          <div className="space-y-4">
+            <div className="bg-gray-50 p-4 rounded-lg min-h-[100px]">
+              <h3 className="text-lg font-medium text-gray-700 mb-2">Formule</h3>
+              <div className="text-lg font-mono break-all text-violet-600">
+                {formula || 'Utilisez les opérateurs pour construire votre formule'}
+              </div>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h3 className="text-lg font-medium text-gray-700 mb-2">Résultat</h3>
+              <div className="text-3xl font-semibold text-violet-600">0.00</div>
+            </div>
           </div>
         </div>
       </Card>
