@@ -16,19 +16,12 @@ export const Calculator = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-6 space-y-6 animate-fadeIn">
-      {/* Formule et Résultat */}
+      {/* Formule */}
       <Card className="p-6 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
-        <div className="space-y-4">
-          <div className="bg-gray-50 p-4 rounded-lg min-h-[80px]">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">Formule</h3>
-            <div className="text-lg font-mono break-all text-violet-600">
-              {formula || 'Utilisez les opérateurs pour construire votre formule'}
-            </div>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-medium text-gray-700 mb-2">Résultat</h3>
-            <div className="text-3xl font-semibold text-violet-600">0.00</div>
+        <div className="bg-gray-50 p-4 rounded-lg min-h-[80px]">
+          <h3 className="text-lg font-medium text-gray-700 mb-2">Formule</h3>
+          <div className="text-lg font-mono break-all text-violet-600">
+            {formula || 'Utilisez les opérateurs pour construire votre formule'}
           </div>
         </div>
       </Card>
