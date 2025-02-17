@@ -6,7 +6,8 @@ import { MatrixTable } from './MatrixTable';
 import { ParameterSelector } from './ParameterSelector';
 import { TarifSelector } from './TarifSelector';
 import { OperatorButton } from './OperatorButton';
-import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo } from 'lucide-react';
+import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo, Save } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 type CompositionMode = 'logique' | 'formule';
 
@@ -18,6 +19,7 @@ export const Calculator = () => {
   const [history, setHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [mode, setMode] = useState<CompositionMode>('logique');
+  const { toast } = useToast();
 
   const updateFormula = (newFormula: string) => {
     setHistory(prev => [...prev.slice(0, currentIndex + 1), newFormula]);
@@ -36,6 +38,22 @@ export const Calculator = () => {
     if (currentIndex < history.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setFormula(history[currentIndex + 1]);
+    }
+  };
+
+  const handleSave = () => {
+    if (formula.trim()) {
+      // Ici vous pouvez ajouter la logique pour sauvegarder la formule
+      toast({
+        title: "Formule enregistrée",
+        description: "La formule a été sauvegardée avec succès.",
+      });
+    } else {
+      toast({
+        title: "Erreur",
+        description: "La formule est vide",
+        variant: "destructive",
+      });
     }
   };
 
@@ -85,6 +103,15 @@ export const Calculator = () => {
               >
                 <Redo className="h-4 w-4" />
               </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+                onClick={handleSave}
+                className="ml-2"
+              >
+                <Save className="h-4 w-4 mr-1" />
+                Enregistrer
+              </Button>
             </div>
           </div>
           <div className="text-lg font-mono break-all text-violet-600">
@@ -96,18 +123,18 @@ export const Calculator = () => {
       {/* Calculatrice */}
       <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
         <div className="max-w-md mx-auto">
-          <div className="grid grid-cols-3 gap-2 mb-4">
-            {mode === 'formule' ? (
-              <>
-                <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
-                <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
-                <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
-                <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
-              </>
-            ) : (
-              <>
-                <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
-                <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
+          <div className="grid grid-flow-col gap-4 mb-4">
+            {/* Opérateurs arithmétiques */}
+            <div className="grid grid-rows-4 gap-2">
+              <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
+              <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
+              <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
+              <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
+            </div>
+
+            {/* Opérateurs de comparaison et logiques (uniquement en mode logique) */}
+            {mode === 'logique' && (
+              <div className="grid grid-rows-4 gap-2">
                 <Button 
                   variant="ghost" 
                   className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
@@ -132,6 +159,21 @@ export const Calculator = () => {
                 <Button 
                   variant="ghost" 
                   className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + '=')}
+                >
+                  {"="}
+                </Button>
+              </div>
+            )}
+
+            {/* Opérateurs de comparaison supplémentaires pour le mode logique */}
+            {mode === 'logique' && (
+              <div className="grid grid-rows-4 gap-2">
+                <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
+                <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
                   onClick={() => updateFormula(formula + ' AND ')}
                 >
                   AND
@@ -143,14 +185,7 @@ export const Calculator = () => {
                 >
                   OR
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                  onClick={() => updateFormula(formula + '=')}
-                >
-                  {"="}
-                </Button>
-              </>
+              </div>
             )}
           </div>
 
