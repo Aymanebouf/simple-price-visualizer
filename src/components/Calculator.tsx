@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -119,7 +118,7 @@ export const Calculator = () => {
                 </Button>
               </div>
             </div>
-            <div className="text-lg font-mono break-all text-violet-600">
+            <div className="text-2xl font-mono break-all text-violet-600 min-h-[40px]">
               {formula || 'Utilisez les opérateurs pour construire votre formule'}
             </div>
           </div>
