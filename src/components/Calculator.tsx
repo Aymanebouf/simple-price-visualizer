@@ -8,6 +8,8 @@ import { TarifSelector } from './TarifSelector';
 import { OperatorButton } from './OperatorButton';
 import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo } from 'lucide-react';
 
+type CompositionMode = 'logique' | 'formule';
+
 export const Calculator = () => {
   const [showMatrix, setShowMatrix] = useState(false);
   const [showParameters, setShowParameters] = useState(false);
@@ -15,6 +17,7 @@ export const Calculator = () => {
   const [formula, setFormula] = useState('');
   const [history, setHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
+  const [mode, setMode] = useState<CompositionMode>('logique');
 
   const updateFormula = (newFormula: string) => {
     setHistory(prev => [...prev.slice(0, currentIndex + 1), newFormula]);
@@ -38,11 +41,31 @@ export const Calculator = () => {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-6 space-y-6 animate-fadeIn">
+      {/* Mode selector */}
+      <div className="flex gap-2">
+        <Button 
+          variant={mode === 'logique' ? 'default' : 'outline'}
+          onClick={() => setMode('logique')}
+          className="flex-1"
+        >
+          Composition condition logique
+        </Button>
+        <Button 
+          variant={mode === 'formule' ? 'default' : 'outline'}
+          onClick={() => setMode('formule')}
+          className="flex-1"
+        >
+          Composition formule
+        </Button>
+      </div>
+
       {/* Formule */}
       <Card className="p-6 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
         <div className="bg-gray-50 p-4 rounded-lg min-h-[80px]">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium text-gray-700">Formule</h3>
+            <h3 className="text-lg font-medium text-gray-700">
+              {mode === 'logique' ? 'Condition logique' : 'Formule'}
+            </h3>
             <div className="flex gap-2">
               <Button 
                 variant="ghost" 
@@ -74,10 +97,14 @@ export const Calculator = () => {
       <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
         <div className="max-w-md mx-auto">
           <div className="grid grid-cols-3 gap-2 mb-4">
-            <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
-            <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
-            <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
-            <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
+            {mode === 'logique' && (
+              <>
+                <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
+                <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
+                <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
+                <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
+              </>
+            )}
             <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
             <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
             <Button 
