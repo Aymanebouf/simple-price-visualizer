@@ -97,58 +97,61 @@ export const Calculator = () => {
       <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
         <div className="max-w-md mx-auto">
           <div className="grid grid-cols-3 gap-2 mb-4">
-            {mode === 'logique' && (
+            {mode === 'formule' ? (
               <>
                 <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
                 <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
                 <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
                 <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
               </>
+            ) : (
+              <>
+                <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
+                <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + '<=')}
+                >
+                  {"<="}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + '>=')}
+                >
+                  {">="}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + '<>')}
+                >
+                  {"<>"}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + ' AND ')}
+                >
+                  AND
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + ' OR ')}
+                >
+                  OR
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                  onClick={() => updateFormula(formula + '=')}
+                >
+                  {"="}
+                </Button>
+              </>
             )}
-            <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
-            <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
-            <Button 
-              variant="ghost" 
-              className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-              onClick={() => updateFormula(formula + '<=')}
-            >
-              {"<="}
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-              onClick={() => updateFormula(formula + '>=')}
-            >
-              {">="}
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-              onClick={() => updateFormula(formula + '<>')}
-            >
-              {"<>"}
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-              onClick={() => updateFormula(formula + ' AND ')}
-            >
-              AND
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-              onClick={() => updateFormula(formula + ' OR ')}
-            >
-              OR
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-              onClick={() => updateFormula(formula + '=')}
-            >
-              {"="}
-            </Button>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
