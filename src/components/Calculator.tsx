@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,11 +5,20 @@ import { MatrixTable } from './MatrixTable';
 import { ParameterSelector } from './ParameterSelector';
 import { TarifSelector } from './TarifSelector';
 import { OperatorButton } from './OperatorButton';
-import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo, Save } from 'lucide-react';
+import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo, Save, Search } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 
 type CompositionMode = 'logique' | 'formule';
 type SelectorType = 'none' | 'parameter' | 'matrix' | 'tarif';
+
+const EXAMPLE_FORMULAS = [
+  { description: "si le volume est supérieur à 100", formula: "{P:VolumePrestation} > 100" },
+  { description: "si le poids est inférieur à 50kg", formula: "{P:PoidsPrestation} < 50" },
+  { description: "si le prix est entre 100 et 200", formula: "{P:PrixPrestation} >= 100 AND {P:PrixPrestation} <= 200" },
+  { description: "volume multiplié par 2", formula: "{P:VolumePrestation} × 2" },
+  { description: "poids divisé par 100", formula: "{P:PoidsPrestation} ÷ 100" },
+];
 
 export const Calculator = () => {
   const [activeSelector, setActiveSelector] = useState<SelectorType>('none');
@@ -18,6 +26,8 @@ export const Calculator = () => {
   const [history, setHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [mode, setMode] = useState<CompositionMode>('logique');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const { toast } = useToast();
 
   const toggleSelector = (selector: SelectorType) => {
@@ -46,7 +56,6 @@ export const Calculator = () => {
 
   const handleSave = () => {
     if (formula.trim()) {
-      // Ici vous pouvez ajouter la logique pour sauvegarder la formule
       toast({
         title: "Formule enregistrée",
         description: "La formule a été sauvegardée avec succès.",
@@ -57,6 +66,41 @@ export const Calculator = () => {
         description: "La formule est vide",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleFormulaSearch = async () => {
+    if (!searchQuery.trim()) return;
+
+    setIsSearching(true);
+    try {
+      const response = await fetch('/api/suggest-formula', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          query: searchQuery,
+          examples: EXAMPLE_FORMULAS
+        }),
+      });
+
+      if (!response.ok) throw new Error('Erreur lors de la recherche');
+
+      const data = await response.json();
+      if (data.suggestedFormula) {
+        updateFormula(data.suggestedFormula);
+        toast({
+          title: "Formule suggérée",
+          description: "La formule a été mise à jour selon votre description.",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de générer une suggestion pour le moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -81,6 +125,33 @@ export const Calculator = () => {
             Composition formule
           </Button>
         </div>
+
+        {/* Recherche de formule par IA */}
+        <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Décrivez votre formule en mots..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleFormulaSearch()}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleFormulaSearch}
+              disabled={isSearching}
+              variant="default"
+            >
+              {isSearching ? (
+                "Recherche..."
+              ) : (
+                <>
+                  <Search className="h-4 w-4 mr-2" />
+                  Suggérer
+                </>
+              )}
+            </Button>
+          </div>
+        </Card>
 
         {/* Formule */}
         <Card className="p-6 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
