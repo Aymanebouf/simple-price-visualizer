@@ -1,19 +1,23 @@
 
-export default async function handler(req: Request) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const openAIApiKey = process.env.OPENAI_API_KEY;
     const { query, examples } = await req.json();
 
-    // Construire le prompt pour l'IA
+    // Construction du prompt pour l'IA
     const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
     Voici quelques exemples de descriptions et leurs formules correspondantes :
     ${examples.map((ex: { description: string; formula: string }) => 
@@ -42,20 +46,14 @@ export default async function handler(req: Request) {
     const data = await response.json();
     const suggestedFormula = data.choices[0].message.content.trim();
 
-    return new Response(
-      JSON.stringify({ suggestedFormula }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ suggestedFormula }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
-    console.error('Error in suggest-formula function:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    console.error('Error in generate-with-ai function:', error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
-}
+});
