@@ -127,73 +127,88 @@ export const Calculator = () => {
         {/* Calculatrice */}
         <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
           <div className="max-w-md mx-auto">
-            <div className="grid grid-flow-col gap-4 mb-4">
-              {/* Opérateurs arithmétiques */}
-              <div className="grid grid-rows-4 gap-2">
-                <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
-                <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
-                <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
-                <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
+            <div className="flex gap-6">
+              <div className="grid grid-flow-col gap-4">
+                {/* Opérateurs arithmétiques */}
+                <div className="grid grid-rows-4 gap-2">
+                  <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
+                  <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
+                  <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
+                  <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
+                </div>
+
+                {/* Opérateurs de comparaison et logiques (uniquement en mode logique) */}
+                {mode === 'logique' && (
+                  <div className="grid grid-rows-4 gap-2">
+                    <Button 
+                      variant="ghost" 
+                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                      onClick={() => updateFormula(formula + '<=')}
+                    >
+                      {"<="}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                      onClick={() => updateFormula(formula + '>=')}
+                    >
+                      {">="}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                      onClick={() => updateFormula(formula + '<>')}
+                    >
+                      {"<>"}
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                      onClick={() => updateFormula(formula + '=')}
+                    >
+                      {"="}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Opérateurs de comparaison supplémentaires pour le mode logique */}
+                {mode === 'logique' && (
+                  <div className="grid grid-rows-4 gap-2">
+                    <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
+                    <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
+                    <Button 
+                      variant="ghost" 
+                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                      onClick={() => updateFormula(formula + ' AND ')}
+                    >
+                      AND
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
+                      onClick={() => updateFormula(formula + ' OR ')}
+                    >
+                      OR
+                    </Button>
+                  </div>
+                )}
               </div>
 
-              {/* Opérateurs de comparaison et logiques (uniquement en mode logique) */}
-              {mode === 'logique' && (
-                <div className="grid grid-rows-4 gap-2">
-                  <Button 
-                    variant="ghost" 
-                    className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                    onClick={() => updateFormula(formula + '<=')}
-                  >
-                    {"<="}
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                    onClick={() => updateFormula(formula + '>=')}
-                  >
-                    {">="}
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                    onClick={() => updateFormula(formula + '<>')}
-                  >
-                    {"<>"}
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                    onClick={() => updateFormula(formula + '=')}
-                  >
-                    {"="}
-                  </Button>
-                </div>
-              )}
-
-              {/* Opérateurs de comparaison supplémentaires pour le mode logique */}
-              {mode === 'logique' && (
-                <div className="grid grid-rows-4 gap-2">
-                  <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
-                  <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
-                  <Button 
-                    variant="ghost" 
-                    className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                    onClick={() => updateFormula(formula + ' AND ')}
-                  >
-                    AND
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                    onClick={() => updateFormula(formula + ' OR ')}
-                  >
-                    OR
-                  </Button>
-                </div>
-              )}
+              {/* Zone de sélection (à droite des opérateurs) */}
+              <div className="flex-1">
+                {activeSelector === 'parameter' && (
+                  <ParameterSelector onClose={() => setActiveSelector('none')} />
+                )}
+                {activeSelector === 'matrix' && (
+                  <MatrixTable onClose={() => setActiveSelector('none')} />
+                )}
+                {activeSelector === 'tarif' && (
+                  <TarifSelector onClose={() => setActiveSelector('none')} />
+                )}
+              </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 mt-4">
               <Button 
                 variant={activeSelector === 'parameter' ? 'default' : 'outline'}
                 className="hover:bg-violet-50 transition-colors"
@@ -218,19 +233,6 @@ export const Calculator = () => {
             </div>
           </div>
         </Card>
-      </div>
-
-      {/* Zone de sélection (côté droit) */}
-      <div className="flex-1">
-        {activeSelector === 'parameter' && (
-          <ParameterSelector onClose={() => setActiveSelector('none')} />
-        )}
-        {activeSelector === 'matrix' && (
-          <MatrixTable onClose={() => setActiveSelector('none')} />
-        )}
-        {activeSelector === 'tarif' && (
-          <TarifSelector onClose={() => setActiveSelector('none')} />
-        )}
       </div>
     </div>
   );

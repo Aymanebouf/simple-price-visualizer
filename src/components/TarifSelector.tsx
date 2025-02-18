@@ -17,9 +17,9 @@ export const TarifSelector = ({ onClose }: TarifSelectorProps) => {
 
   return (
     <Card className="p-6 bg-white/95 backdrop-blur-sm animate-slideIn">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-xl font-semibold text-gray-800">Sélection Tarif</h3>
-        <Button variant="ghost" size="icon" onClick={onClose}>
+      <div className="flex justify-between items-center mb-6 bg-violet-600 -mx-6 -mt-6 p-4 text-white">
+        <h3 className="text-xl font-semibold">Sélection Tarif</h3>
+        <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-violet-700">
           <X className="h-4 w-4" />
         </Button>
       </div>
