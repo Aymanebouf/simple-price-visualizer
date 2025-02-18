@@ -1,26 +1,24 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
+export default async function handler(req: Request) {
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  };
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    const openAIApiKey = process.env.OPENAI_API_KEY;
     const { query, examples } = await req.json();
 
     // Construire le prompt pour l'IA
     const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
     Voici quelques exemples de descriptions et leurs formules correspondantes :
-    ${examples.map(ex => `Description: "${ex.description}" => Formule: "${ex.formula}"`).join('\n')}
+    ${examples.map((ex: { description: string; formula: string }) => 
+      `Description: "${ex.description}" => Formule: "${ex.formula}"`
+    ).join('\n')}
     
     À partir de ces exemples, génère la formule correspondant à cette description : "${query}"
     Retourne uniquement la formule, sans explications.`;
@@ -51,12 +49,13 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    console.error('Error in suggest-formula function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   }
-});
+}
