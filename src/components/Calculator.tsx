@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -60,8 +61,21 @@ export const Calculator = () => {
   };
 
   return (
-    <div className="h-screen flex gap-6 p-6">
-      {/* Calculatrice (côté gauche) */}
+    <div className="h-screen flex items-start gap-6 p-6">
+      {/* Zone de sélection (à gauche) */}
+      <div className="flex-1">
+        {activeSelector === 'parameter' && (
+          <ParameterSelector onClose={() => setActiveSelector('none')} />
+        )}
+        {activeSelector === 'matrix' && (
+          <MatrixTable onClose={() => setActiveSelector('none')} />
+        )}
+        {activeSelector === 'tarif' && (
+          <TarifSelector onClose={() => setActiveSelector('none')} />
+        )}
+      </div>
+
+      {/* Calculatrice (côté droit) */}
       <div className="w-[500px] space-y-6 animate-fadeIn">
         {/* Mode selector */}
         <div className="flex gap-2">
@@ -127,7 +141,7 @@ export const Calculator = () => {
         {/* Calculatrice */}
         <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
           <div className="max-w-md mx-auto">
-            <div className="flex gap-6">
+            <div className="flex flex-col gap-4">
               <div className="grid grid-flow-col gap-4">
                 {/* Opérateurs arithmétiques */}
                 <div className="grid grid-rows-4 gap-2">
@@ -194,42 +208,29 @@ export const Calculator = () => {
                 )}
               </div>
 
-              {/* Zone de sélection (à droite des opérateurs) */}
-              <div className="flex-1">
-                {activeSelector === 'parameter' && (
-                  <ParameterSelector onClose={() => setActiveSelector('none')} />
-                )}
-                {activeSelector === 'matrix' && (
-                  <MatrixTable onClose={() => setActiveSelector('none')} />
-                )}
-                {activeSelector === 'tarif' && (
-                  <TarifSelector onClose={() => setActiveSelector('none')} />
-                )}
+              <div className="grid grid-cols-3 gap-2">
+                <Button 
+                  variant={activeSelector === 'parameter' ? 'default' : 'outline'}
+                  className="hover:bg-violet-50 transition-colors"
+                  onClick={() => toggleSelector('parameter')}
+                >
+                  Paramètre
+                </Button>
+                <Button 
+                  variant={activeSelector === 'matrix' ? 'default' : 'outline'}
+                  className="hover:bg-violet-50 transition-colors"
+                  onClick={() => toggleSelector('matrix')}
+                >
+                  Matrice
+                </Button>
+                <Button 
+                  variant={activeSelector === 'tarif' ? 'default' : 'outline'}
+                  className="hover:bg-violet-50 transition-colors"
+                  onClick={() => toggleSelector('tarif')}
+                >
+                  Tarif
+                </Button>
               </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2 mt-4">
-              <Button 
-                variant={activeSelector === 'parameter' ? 'default' : 'outline'}
-                className="hover:bg-violet-50 transition-colors"
-                onClick={() => toggleSelector('parameter')}
-              >
-                Paramètre
-              </Button>
-              <Button 
-                variant={activeSelector === 'matrix' ? 'default' : 'outline'}
-                className="hover:bg-violet-50 transition-colors"
-                onClick={() => toggleSelector('matrix')}
-              >
-                Matrice
-              </Button>
-              <Button 
-                variant={activeSelector === 'tarif' ? 'default' : 'outline'}
-                className="hover:bg-violet-50 transition-colors"
-                onClick={() => toggleSelector('tarif')}
-              >
-                Tarif
-              </Button>
             </div>
           </div>
         </Card>
