@@ -62,20 +62,7 @@ export const Calculator = () => {
 
   return (
     <div className="h-screen flex items-start gap-6 p-6">
-      {/* Zone de sélection (à gauche) */}
-      <div className="flex-1">
-        {activeSelector === 'parameter' && (
-          <ParameterSelector onClose={() => setActiveSelector('none')} />
-        )}
-        {activeSelector === 'matrix' && (
-          <MatrixTable onClose={() => setActiveSelector('none')} />
-        )}
-        {activeSelector === 'tarif' && (
-          <TarifSelector onClose={() => setActiveSelector('none')} />
-        )}
-      </div>
-
-      {/* Calculatrice (côté droit) */}
+      {/* Calculatrice (côté gauche) */}
       <div className="w-[500px] space-y-6 animate-fadeIn">
         {/* Mode selector */}
         <div className="flex gap-2">
@@ -234,6 +221,19 @@ export const Calculator = () => {
             </div>
           </div>
         </Card>
+      </div>
+
+      {/* Zone de sélection (à droite) */}
+      <div className="flex-1">
+        {activeSelector === 'parameter' && (
+          <ParameterSelector onClose={() => setActiveSelector('none')} />
+        )}
+        {activeSelector === 'matrix' && (
+          <MatrixTable onClose={() => setActiveSelector('none')} />
+        )}
+        {activeSelector === 'tarif' && (
+          <TarifSelector onClose={() => setActiveSelector('none')} />
+        )}
       </div>
     </div>
   );
