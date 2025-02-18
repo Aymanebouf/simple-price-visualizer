@@ -94,6 +94,7 @@ export const Calculator = () => {
         });
       }
     } catch (error) {
+      console.error('Error searching formula:', error);
       toast({
         title: "Erreur",
         description: "Impossible de générer une suggestion pour le moment.",
