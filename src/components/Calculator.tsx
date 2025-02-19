@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -154,8 +155,8 @@ export const Calculator = () => {
 
         {/* Formule */}
         <Card className="p-6 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
-          <div className="bg-gray-50 p-4 rounded-lg min-h-[80px]">
-            <div className="flex justify-between items-center mb-2">
+          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]"> {/* Augmenté de 80px à 120px */}
+            <div className="flex justify-between items-center mb-4"> {/* Augmenté de mb-2 à mb-4 */}
               <h3 className="text-lg font-medium text-gray-700">
                 {mode === 'logique' ? 'Condition logique' : 'Formule'}
               </h3>
@@ -189,7 +190,7 @@ export const Calculator = () => {
                 </Button>
               </div>
             </div>
-            <div className="text-2xl font-mono break-all text-violet-600 min-h-[40px]">
+            <div className="text-2xl font-mono break-all text-violet-600 min-h-[60px] p-2"> {/* Augmenté de 40px à 60px et ajouté padding */}
               {formula || 'Utilisez les opérateurs pour construire votre formule'}
             </div>
           </div>
