@@ -17,7 +17,8 @@ serve(async (req) => {
   try {
     const { query, examples } = await req.json();
 
-    // Construction du prompt pour l'IA
+    console.log('Requête reçue:', { query, examples });
+
     const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
     Voici quelques exemples de descriptions et leurs formules correspondantes :
     ${examples.map((ex: { description: string; formula: string }) => 
@@ -26,6 +27,8 @@ serve(async (req) => {
     
     À partir de ces exemples, génère la formule correspondant à cette description : "${query}"
     Retourne uniquement la formule, sans explications.`;
+
+    console.log('Envoi de la requête à OpenAI...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -44,6 +47,8 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log('Réponse OpenAI reçue:', data);
+
     const suggestedFormula = data.choices[0].message.content.trim();
 
     return new Response(JSON.stringify({ suggestedFormula }), {
