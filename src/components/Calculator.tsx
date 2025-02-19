@@ -8,6 +8,7 @@ import { OperatorButton } from './OperatorButton';
 import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo, Save, Search } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
 
 type CompositionMode = 'logique' | 'formule';
 type SelectorType = 'none' | 'parameter' | 'matrix' | 'tarif';
