@@ -106,7 +106,6 @@ export const Calculator = () => {
 
   return (
     <div className="h-screen flex items-start gap-6 p-6">
-      {/* Calculatrice (côté gauche) */}
       <div className="w-[500px] space-y-6 animate-fadeIn">
         {/* Mode selector */}
         <div className="flex gap-2">
@@ -129,17 +128,18 @@ export const Calculator = () => {
         {/* Recherche de formule par IA */}
         <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
           <div className="flex gap-2">
-            <Input
+            <textarea
               placeholder="Décrivez votre formule en mots..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleFormulaSearch()}
-              className="flex-1"
+              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleFormulaSearch()}
+              className="flex-1 min-h-[100px] p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-500 resize-y"
             />
             <Button 
               onClick={handleFormulaSearch}
               disabled={isSearching}
               variant="default"
+              className="h-fit"
             >
               {isSearching ? (
                 "Recherche..."
