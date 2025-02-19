@@ -74,19 +74,16 @@ export const Calculator = () => {
 
     setIsSearching(true);
     try {
-      const response = await fetch('/api/suggest-formula', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+      const { data, error } = await supabase.functions.invoke('suggest-formula', {
+        body: { 
           query: searchQuery,
           examples: EXAMPLE_FORMULAS
-        }),
+        },
       });
 
-      if (!response.ok) throw new Error('Erreur lors de la recherche');
+      if (error) throw error;
 
-      const data = await response.json();
-      if (data.suggestedFormula) {
+      if (data?.suggestedFormula) {
         updateFormula(data.suggestedFormula);
         toast({
           title: "Formule suggérée",

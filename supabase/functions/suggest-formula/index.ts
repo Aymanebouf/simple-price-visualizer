@@ -1,21 +1,21 @@
 
-import { Request } from '@/types';
-import { openai } from '@/lib/openai';
+import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';
 
-export async function POST(request: Request) {
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  };
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 
-  if (request.method === 'OPTIONS') {
+serve(async (req) => {
+  // Gestion des requêtes CORS preflight
+  if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { query, examples } = await request.json();
+    const { query, examples } = await req.json();
 
-    // Construire le prompt pour l'IA
+    // Construction du prompt pour l'IA
     const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
     Voici quelques exemples de descriptions et leurs formules correspondantes :
     ${examples.map((ex: { description: string; formula: string }) => 
@@ -28,11 +28,11 @@ export async function POST(request: Request) {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: 'Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.' },
           { role: 'user', content: prompt }
@@ -44,20 +44,14 @@ export async function POST(request: Request) {
     const data = await response.json();
     const suggestedFormula = data.choices[0].message.content.trim();
 
-    return new Response(
-      JSON.stringify({ suggestedFormula }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ suggestedFormula }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error in suggest-formula function:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
-}
+});
