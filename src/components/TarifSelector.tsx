@@ -1,14 +1,11 @@
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { X } from 'lucide-react';
+import { Card } from 'primereact/card';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
-interface TarifSelectorProps {
-  onClose: () => void;
-}
-
-export const TarifSelector = ({ onClose }: TarifSelectorProps) => {
+export const TarifSelector = ({ onClose }) => {
   const tarifs = [
     { code: 'Tarif7884', prestation: 'Vente: déballage des meubles uniquement', etat: 'Returned to Store', formuleCondition: '{P:PoidsPrestation} > {V:100}' },
     { code: 'Tarif8849', prestation: 'Vente: Ausfall Lieferung LCD', etat: 'ANNULEAVANTLIVRAISON', formuleCondition: 'N/A' },
@@ -16,44 +13,26 @@ export const TarifSelector = ({ onClose }: TarifSelectorProps) => {
   ];
 
   return (
-    <Card className="p-6 bg-white/95 backdrop-blur-sm animate-slideIn">
-      <div className="flex justify-between items-center mb-6 bg-violet-600 -mx-6 -mt-6 p-4 text-white">
-        <h3 className="text-xl font-semibold">Sélection Tarif</h3>
-        <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-violet-700">
-          <X className="h-4 w-4" />
-        </Button>
+    <Card className="w-full shadow-1">
+      <div className="flex justify-between items-center mb-6 bg-primary p-4 -mx-4 -mt-4">
+        <h3 className="text-xl font-semibold text-white">Sélection Tarif</h3>
+        <Button icon="pi pi-times" onClick={onClose} text severity="secondary" className="text-white" />
       </div>
 
-      <div className="flex gap-4 mb-6">
-        <Input type="text" placeholder="Recherche..." className="flex-1" />
-        <Button variant="outline">Clear</Button>
+      <div className="flex gap-4 mb-4">
+        <span className="p-input-icon-left flex-1">
+          <i className="pi pi-search" />
+          <InputText placeholder="Recherche..." className="w-full" />
+        </span>
+        <Button label="Clear" severity="secondary" outlined />
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Code</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Prestation</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">État</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Formule condition</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tarifs.map((tarif) => (
-              <tr 
-                key={tarif.code}
-                className="border-t border-gray-100 hover:bg-violet-50 transition-colors cursor-pointer"
-              >
-                <td className="px-4 py-3 text-sm text-gray-700">{tarif.code}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{tarif.prestation}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{tarif.etat}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{tarif.formuleCondition}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable value={tarifs} className="p-datatable-sm" responsiveLayout="scroll">
+        <Column field="code" header="Code" sortable />
+        <Column field="prestation" header="Prestation" sortable />
+        <Column field="etat" header="État" sortable />
+        <Column field="formuleCondition" header="Formule condition" sortable />
+      </DataTable>
     </Card>
   );
 };
