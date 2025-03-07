@@ -1,8 +1,9 @@
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { X } from 'lucide-react';
+import { Card } from 'primereact/card';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 export const MatrixTable = ({ onClose }) => {
   const matrixData = [
@@ -11,45 +12,26 @@ export const MatrixTable = ({ onClose }) => {
   ];
 
   return (
-    <Card className="p-6 bg-white/95 backdrop-blur-sm animate-slideIn">
-      <div className="flex justify-between items-center mb-6 bg-violet-600 -mx-6 -mt-6 p-4 text-white">
-        <h3 className="text-xl font-semibold">Sélection Matrice</h3>
-        <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-violet-700">
-          <X className="h-4 w-4" />
-        </Button>
+    <Card className="w-full shadow-1">
+      <div className="flex justify-between items-center mb-6 bg-primary p-4 -mx-4 -mt-4">
+        <h3 className="text-xl font-semibold text-white">Sélection Matrice</h3>
+        <Button icon="pi pi-times" onClick={onClose} text severity="secondary" className="text-white" />
       </div>
 
       <div className="mb-4">
-        <Input type="text" placeholder="Rechercher..." className="w-full" />
+        <span className="p-input-icon-left w-full">
+          <i className="pi pi-search" />
+          <InputText placeholder="Rechercher..." className="w-full" />
+        </span>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Code</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Description</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Dimension</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Nom du champ</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Unité</th>
-            </tr>
-          </thead>
-          <tbody>
-            {matrixData.map((item) => (
-              <tr 
-                key={item.code}
-                className="border-t border-gray-100 hover:bg-violet-50 transition-colors cursor-pointer"
-              >
-                <td className="px-4 py-3 text-sm text-gray-700">{item.code}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{item.description}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{item.dimension}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{item.fieldName}</td>
-                <td className="px-4 py-3 text-sm text-gray-700">{item.unit}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable value={matrixData} className="p-datatable-sm" responsiveLayout="scroll">
+        <Column field="code" header="Code" sortable />
+        <Column field="description" header="Description" sortable />
+        <Column field="dimension" header="Dimension" sortable />
+        <Column field="fieldName" header="Nom du champ" sortable />
+        <Column field="unit" header="Unité" sortable />
+      </DataTable>
     </Card>
   );
 };
