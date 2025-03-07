@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -101,8 +102,8 @@ export const Calculator = () => {
   };
 
   return (
-    <div className="h-screen flex items-start gap-6 p-6">
-      <div className="w-[500px] space-y-6 animate-fadeIn">
+    <div className="flex flex-col h-screen p-6 gap-6">
+      <div className="w-full max-w-3xl mx-auto space-y-6 animate-fadeIn">
         {/* Mode selector */}
         <div className="flex gap-2">
           <Button 
@@ -151,8 +152,8 @@ export const Calculator = () => {
 
         {/* Formule */}
         <Card className="p-6 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
-          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]"> {/* Augmenté de 80px à 120px */}
-            <div className="flex justify-between items-center mb-4"> {/* Augmenté de mb-2 à mb-4 */}
+          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]">
+            <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-gray-700">
                 {mode === 'logique' ? 'Condition logique' : 'Formule'}
               </h3>
@@ -186,7 +187,7 @@ export const Calculator = () => {
                 </Button>
               </div>
             </div>
-            <div className="text-2xl font-mono break-all text-violet-600 min-h-[60px] p-2"> {/* Augmenté de 40px à 60px et ajouté padding */}
+            <div className="text-2xl font-mono break-all text-violet-600 min-h-[60px] p-2">
               {formula || 'Utilisez les opérateurs pour construire votre formule'}
             </div>
           </div>
@@ -290,18 +291,21 @@ export const Calculator = () => {
         </Card>
       </div>
 
-      {/* Zone de sélection (à droite) */}
-      <div className="flex-1">
-        {activeSelector === 'parameter' && (
-          <ParameterSelector onClose={() => setActiveSelector('none')} />
-        )}
-        {activeSelector === 'matrix' && (
-          <MatrixTable onClose={() => setActiveSelector('none')} />
-        )}
-        {activeSelector === 'tarif' && (
-          <TarifSelector onClose={() => setActiveSelector('none')} />
-        )}
-      </div>
+      {/* Zone de sélection (en bas) */}
+      {activeSelector !== 'none' && (
+        <div className="w-full max-w-4xl mx-auto mt-4">
+          {activeSelector === 'parameter' && (
+            <ParameterSelector onClose={() => setActiveSelector('none')} />
+          )}
+          {activeSelector === 'matrix' && (
+            <MatrixTable onClose={() => setActiveSelector('none')} />
+          )}
+          {activeSelector === 'tarif' && (
+            <TarifSelector onClose={() => setActiveSelector('none')} />
+          )}
+        </div>
+      )}
     </div>
   );
 };
+
