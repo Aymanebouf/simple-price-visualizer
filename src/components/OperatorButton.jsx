@@ -1,12 +1,14 @@
 
-import { Button } from 'primereact/button';
+import { Button } from '@/components/ui/button';
 
-export const OperatorButton = ({ icon, label, onClick }) => {
+export const OperatorButton = ({ icon: Icon, label, onClick }) => {
   return (
     <Button
-      className="p-button-outlined w-full h-12 p-button-secondary"
+      variant="ghost"
+      className="w-full h-12 bg-white hover:bg-violet-50 border border-gray-200 transition-all duration-200 ease-in-out"
       onClick={onClick}
-      label={label}
-    />
+    >
+      {label}
+    </Button>
   );
 };
