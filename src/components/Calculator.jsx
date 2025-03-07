@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -290,8 +291,8 @@ export const Calculator = () => {
         </Card>
       </div>
 
-      {/* Zone de sélection (à droite) */}
-      <div className="flex-1">
+      {/* Zone de sélection (à droite et en bas) */}
+      <div className="flex-1 flex items-end">
         {activeSelector === 'parameter' && (
           <ParameterSelector onClose={() => setActiveSelector('none')} />
         )}
@@ -305,4 +306,3 @@ export const Calculator = () => {
     </div>
   );
 };
-
