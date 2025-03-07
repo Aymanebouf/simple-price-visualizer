@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -102,8 +101,8 @@ export const Calculator = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen p-6 gap-6">
-      <div className="w-full max-w-3xl mx-auto space-y-6 animate-fadeIn">
+    <div className="h-screen flex items-start gap-6 p-6">
+      <div className="w-[500px] space-y-6 animate-fadeIn">
         {/* Mode selector */}
         <div className="flex gap-2">
           <Button 
@@ -291,20 +290,18 @@ export const Calculator = () => {
         </Card>
       </div>
 
-      {/* Zone de sélection (en bas) */}
-      {activeSelector !== 'none' && (
-        <div className="w-full max-w-4xl mx-auto mt-4">
-          {activeSelector === 'parameter' && (
-            <ParameterSelector onClose={() => setActiveSelector('none')} />
-          )}
-          {activeSelector === 'matrix' && (
-            <MatrixTable onClose={() => setActiveSelector('none')} />
-          )}
-          {activeSelector === 'tarif' && (
-            <TarifSelector onClose={() => setActiveSelector('none')} />
-          )}
-        </div>
-      )}
+      {/* Zone de sélection (à droite) */}
+      <div className="flex-1">
+        {activeSelector === 'parameter' && (
+          <ParameterSelector onClose={() => setActiveSelector('none')} />
+        )}
+        {activeSelector === 'matrix' && (
+          <MatrixTable onClose={() => setActiveSelector('none')} />
+        )}
+        {activeSelector === 'tarif' && (
+          <TarifSelector onClose={() => setActiveSelector('none')} />
+        )}
+      </div>
     </div>
   );
 };
