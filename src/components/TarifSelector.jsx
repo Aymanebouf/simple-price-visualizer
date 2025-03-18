@@ -1,8 +1,8 @@
 
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { X } from 'lucide-react';
+import React from 'react';
+import { Card } from 'primereact/card';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
 
 export const TarifSelector = ({ onClose }) => {
   const tarifs = [
@@ -11,18 +11,18 @@ export const TarifSelector = ({ onClose }) => {
     { code: 'TestTa', prestation: 'Vente: Autre', etat: 'Reporte', formuleCondition: 'N/A' },
   ];
 
-  return (
-    <Card className="p-6 bg-white/95 backdrop-blur-sm animate-slideIn">
-      <div className="flex justify-between items-center mb-6 bg-violet-600 -mx-6 -mt-6 p-4 text-white">
-        <h3 className="text-xl font-semibold">Sélection Tarif</h3>
-        <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-violet-700">
-          <X className="h-4 w-4" />
-        </Button>
-      </div>
+  const header = (
+    <div className="flex justify-content-between align-items-center bg-violet-600 -mx-4 -mt-4 p-4 text-white">
+      <h3 className="text-xl font-semibold">Sélection Tarif</h3>
+      <Button icon="pi pi-times" onClick={onClose} text className="text-white hover:bg-violet-700" />
+    </div>
+  );
 
+  return (
+    <Card className="p-4 bg-white/95 backdrop-blur-sm animate-slideIn" header={header}>
       <div className="flex gap-4 mb-6">
-        <Input type="text" placeholder="Recherche..." className="flex-1" />
-        <Button variant="outline">Clear</Button>
+        <InputText type="text" placeholder="Recherche..." className="flex-1" />
+        <Button label="Clear" outlined />
       </div>
 
       <div className="overflow-x-auto">
@@ -39,7 +39,7 @@ export const TarifSelector = ({ onClose }) => {
             {tarifs.map((tarif) => (
               <tr 
                 key={tarif.code}
-                className="border-t border-gray-100 hover:bg-violet-50 transition-colors cursor-pointer"
+                className="border-top-1 border-gray-100 hover:bg-violet-50 transition-colors cursor-pointer"
               >
                 <td className="px-4 py-3 text-sm text-gray-700">{tarif.code}</td>
                 <td className="px-4 py-3 text-sm text-gray-700">{tarif.prestation}</td>
