@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
+import React, { useState } from 'react';
+import { Card } from 'primereact/card';
+import { Button } from 'primereact/button';
+import { InputTextarea } from 'primereact/inputtextarea';
 import { MatrixTable } from './MatrixTable';
 import { ParameterSelector } from './ParameterSelector';
 import { TarifSelector } from './TarifSelector';
 import { OperatorButton } from './OperatorButton';
-import { Plus, Minus, Divide, X, ChevronRight, ChevronLeft, Undo, Redo, Save, Search } from 'lucide-react';
-import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
-import { supabase } from "@/integrations/supabase/client";
+import { Toast } from 'primereact/toast';
+import { useRef } from 'react';
 
 const EXAMPLE_FORMULAS = [
   { description: "si le volume est supérieur à 100", formula: "{P:VolumePrestation} > 100" },
@@ -26,7 +26,7 @@ export const Calculator = () => {
   const [mode, setMode] = useState('logique');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
-  const { toast } = useToast();
+  const toast = useRef(null);
 
   const toggleSelector = (selector) => {
     setActiveSelector(current => current === selector ? 'none' : selector);
@@ -54,15 +54,18 @@ export const Calculator = () => {
 
   const handleSave = () => {
     if (formula.trim()) {
-      toast({
-        title: "Formule enregistrée",
-        description: "La formule a été sauvegardée avec succès.",
+      toast.current.show({
+        severity: 'success',
+        summary: 'Formule enregistrée',
+        detail: 'La formule a été sauvegardée avec succès.',
+        life: 3000
       });
     } else {
-      toast({
-        title: "Erreur",
-        description: "La formule est vide",
-        variant: "destructive",
+      toast.current.show({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'La formule est vide',
+        life: 3000
       });
     }
   };
@@ -72,218 +75,181 @@ export const Calculator = () => {
 
     setIsSearching(true);
     try {
-      const { data, error } = await supabase.functions.invoke('suggest-formula', {
-        body: { 
-          query: searchQuery,
-          examples: EXAMPLE_FORMULAS
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.suggestedFormula) {
-        updateFormula(data.suggestedFormula);
-        toast({
-          title: "Formule suggérée",
-          description: "La formule a été mise à jour selon votre description.",
-        });
-      }
+      // Simulate API call for now
+      setTimeout(() => {
+        const suggestedFormula = EXAMPLE_FORMULAS.find(
+          ef => ef.description.toLowerCase().includes(searchQuery.toLowerCase())
+        )?.formula || '';
+        
+        if (suggestedFormula) {
+          updateFormula(suggestedFormula);
+          toast.current.show({
+            severity: 'info',
+            summary: 'Formule suggérée',
+            detail: 'La formule a été mise à jour selon votre description.',
+            life: 3000
+          });
+        } else {
+          toast.current.show({
+            severity: 'warn',
+            summary: 'Aucune suggestion',
+            detail: 'Aucune formule ne correspond à votre description.',
+            life: 3000
+          });
+        }
+        setIsSearching(false);
+      }, 1000);
     } catch (error) {
       console.error('Error searching formula:', error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de générer une suggestion pour le moment.",
-        variant: "destructive",
+      toast.current.show({
+        severity: 'error',
+        summary: 'Erreur',
+        detail: 'Impossible de générer une suggestion pour le moment.',
+        life: 3000
       });
-    } finally {
       setIsSearching(false);
     }
   };
 
   return (
     <div className="h-screen flex items-start gap-6 p-6">
+      <Toast ref={toast} />
       <div className="w-[500px] space-y-6 animate-fadeIn">
         {/* Mode selector */}
         <div className="flex gap-2">
           <Button 
-            variant={mode === 'logique' ? 'default' : 'outline'}
+            label="Composition condition logique"
+            severity={mode === 'logique' ? 'secondary' : 'info'}
             onClick={() => setMode('logique')}
             className="flex-1"
-          >
-            Composition condition logique
-          </Button>
+            outlined={mode !== 'logique'}
+          />
           <Button 
-            variant={mode === 'formule' ? 'default' : 'outline'}
+            label="Composition formule"
+            severity={mode === 'formule' ? 'secondary' : 'info'}
             onClick={() => setMode('formule')}
             className="flex-1"
-          >
-            Composition formule
-          </Button>
+            outlined={mode !== 'formule'}
+          />
         </div>
 
         {/* Recherche de formule par IA */}
-        <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
+        <Card className="p-4 bg-white/90 border-1 border-gray-100 shadow-1">
           <div className="flex gap-2">
-            <textarea
+            <InputTextarea
               placeholder="Décrivez votre formule en mots..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleFormulaSearch()}
-              className="flex-1 min-h-[100px] p-3 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-violet-500 resize-y"
+              className="flex-1 min-h-[100px]"
+              rows={5}
+              autoResize
             />
             <Button 
               onClick={handleFormulaSearch}
               disabled={isSearching}
-              variant="default"
-              className="h-fit"
-            >
-              {isSearching ? (
-                "Recherche..."
-              ) : (
-                <>
-                  <Search className="h-4 w-4 mr-2" />
-                  Suggérer
-                </>
-              )}
-            </Button>
+              severity="info"
+              className="h-fit align-self-start"
+              icon="pi pi-search"
+              label={isSearching ? "Recherche..." : "Suggérer"}
+            />
           </div>
         </Card>
 
         {/* Formule */}
-        <Card className="p-6 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
-          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]"> {/* Augmenté de 80px à 120px */}
-            <div className="flex justify-between items-center mb-4"> {/* Augmenté de mb-2 à mb-4 */}
+        <Card className="bg-white/90 border-1 border-gray-100 shadow-1">
+          <div className="bg-gray-50 p-4 rounded-lg min-h-[120px]">
+            <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium text-gray-700">
                 {mode === 'logique' ? 'Condition logique' : 'Formule'}
               </h3>
               <div className="flex gap-2">
                 <Button 
-                  variant="ghost" 
-                  size="icon" 
+                  icon="pi pi-undo"
+                  severity="secondary" 
+                  text
                   onClick={handleUndo}
                   disabled={currentIndex <= 0}
-                  className="h-8 w-8 hover:bg-violet-50"
-                >
-                  <Undo className="h-4 w-4" />
-                </Button>
+                  className="p-button-rounded"
+                />
                 <Button 
-                  variant="ghost" 
-                  size="icon" 
+                  icon="pi pi-redo"
+                  severity="secondary" 
+                  text
                   onClick={handleRedo}
                   disabled={currentIndex >= history.length - 1}
-                  className="h-8 w-8 hover:bg-violet-50"
-                >
-                  <Redo className="h-4 w-4" />
-                </Button>
+                  className="p-button-rounded"
+                />
                 <Button 
-                  variant="outline"
-                  size="sm"
+                  icon="pi pi-save"
+                  label="Enregistrer"
+                  severity="info"
                   onClick={handleSave}
-                  className="ml-2"
-                >
-                  <Save className="h-4 w-4 mr-1" />
-                  Enregistrer
-                </Button>
+                  outlined
+                />
               </div>
             </div>
-            <div className="text-2xl font-mono break-all text-violet-600 min-h-[60px] p-2"> {/* Augmenté de 40px à 60px et ajouté padding */}
+            <div className="text-2xl font-mono break-all text-violet-600 min-h-[60px] p-2">
               {formula || 'Utilisez les opérateurs pour construire votre formule'}
             </div>
           </div>
         </Card>
 
         {/* Calculatrice */}
-        <Card className="p-4 bg-white/90 backdrop-blur-sm border border-gray-100 shadow-sm">
+        <Card className="p-4 bg-white/90 border-1 border-gray-100 shadow-1">
           <div className="max-w-md mx-auto">
             <div className="flex flex-col gap-4">
               <div className="grid grid-flow-col gap-4">
                 {/* Opérateurs arithmétiques */}
                 <div className="grid grid-rows-4 gap-2">
-                  <OperatorButton icon={Plus} label="+" onClick={() => updateFormula(formula + '+')} />
-                  <OperatorButton icon={Minus} label="-" onClick={() => updateFormula(formula + '-')} />
-                  <OperatorButton icon={X} label="×" onClick={() => updateFormula(formula + '×')} />
-                  <OperatorButton icon={Divide} label="÷" onClick={() => updateFormula(formula + '÷')} />
+                  <OperatorButton icon="pi pi-plus" label="+" onClick={() => updateFormula(formula + '+')} />
+                  <OperatorButton icon="pi pi-minus" label="-" onClick={() => updateFormula(formula + '-')} />
+                  <OperatorButton icon="pi pi-times" label="×" onClick={() => updateFormula(formula + '×')} />
+                  <OperatorButton icon="pi pi-percentage" label="÷" onClick={() => updateFormula(formula + '÷')} />
                 </div>
 
                 {/* Opérateurs de comparaison et logiques (uniquement en mode logique) */}
                 {mode === 'logique' && (
                   <div className="grid grid-rows-4 gap-2">
-                    <Button 
-                      variant="ghost" 
-                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                      onClick={() => updateFormula(formula + '<=')}
-                    >
-                      {"<="}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                      onClick={() => updateFormula(formula + '>=')}
-                    >
-                      {">="}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                      onClick={() => updateFormula(formula + '<>')}
-                    >
-                      {"<>"}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                      onClick={() => updateFormula(formula + '=')}
-                    >
-                      {"="}
-                    </Button>
+                    <OperatorButton label="<=" onClick={() => updateFormula(formula + '<=')} />
+                    <OperatorButton label=">=" onClick={() => updateFormula(formula + '>=')} />
+                    <OperatorButton label="<>" onClick={() => updateFormula(formula + '<>')} />
+                    <OperatorButton label="=" onClick={() => updateFormula(formula + '=')} />
                   </div>
                 )}
 
                 {/* Opérateurs de comparaison supplémentaires pour le mode logique */}
                 {mode === 'logique' && (
                   <div className="grid grid-rows-4 gap-2">
-                    <OperatorButton icon={ChevronLeft} label="<" onClick={() => updateFormula(formula + '<')} />
-                    <OperatorButton icon={ChevronRight} label=">" onClick={() => updateFormula(formula + '>')} />
-                    <Button 
-                      variant="ghost" 
-                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                      onClick={() => updateFormula(formula + ' AND ')}
-                    >
-                      AND
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      className="h-10 bg-white hover:bg-violet-50 border border-gray-200"
-                      onClick={() => updateFormula(formula + ' OR ')}
-                    >
-                      OR
-                    </Button>
+                    <OperatorButton label="<" onClick={() => updateFormula(formula + '<')} />
+                    <OperatorButton label=">" onClick={() => updateFormula(formula + '>')} />
+                    <OperatorButton label="AND" onClick={() => updateFormula(formula + ' AND ')} />
+                    <OperatorButton label="OR" onClick={() => updateFormula(formula + ' OR ')} />
                   </div>
                 )}
               </div>
 
               <div className="grid grid-cols-3 gap-2">
                 <Button 
-                  variant={activeSelector === 'parameter' ? 'default' : 'outline'}
-                  className="hover:bg-violet-50 transition-colors"
+                  label="Paramètre"
+                  severity="info"
                   onClick={() => toggleSelector('parameter')}
-                >
-                  Paramètre
-                </Button>
-                <Button 
-                  variant={activeSelector === 'matrix' ? 'default' : 'outline'}
+                  outlined={activeSelector !== 'parameter'}
                   className="hover:bg-violet-50 transition-colors"
+                />
+                <Button 
+                  label="Matrice"
+                  severity="info"
                   onClick={() => toggleSelector('matrix')}
-                >
-                  Matrice
-                </Button>
-                <Button 
-                  variant={activeSelector === 'tarif' ? 'default' : 'outline'}
+                  outlined={activeSelector !== 'matrix'}
                   className="hover:bg-violet-50 transition-colors"
+                />
+                <Button 
+                  label="Tarif"
+                  severity="info"
                   onClick={() => toggleSelector('tarif')}
-                >
-                  Tarif
-                </Button>
+                  outlined={activeSelector !== 'tarif'}
+                  className="hover:bg-violet-50 transition-colors"
+                />
               </div>
             </div>
           </div>
