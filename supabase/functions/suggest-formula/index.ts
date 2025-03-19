@@ -2,7 +2,8 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+// Clé API directe (temporairement codée en dur)
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY') || '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';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -33,7 +34,7 @@ serve(async (req) => {
     À partir de ces exemples, génère la formule correspondant à cette description : "${query}"
     Retourne uniquement la formule, sans explications.`;
 
-    console.log('Envoi de la requête à OpenAI avec la clé API configurée...');
+    console.log('Envoi de la requête à OpenAI avec la nouvelle clé API...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
