@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
+// These are publishable keys, so it's safe to keep them in the code
 const SUPABASE_URL = "https://nisfhngeqtfrvxhdcxdj.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pc2ZobmdlcXRmcnZ4aGRjeGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4Njc0MTQsImV4cCI6MjA1NTQ0MzQxNH0.w53vUDqt1eeyw8UGlPk9kFN22Y-xkrtJ9w3Cl0nXEf0";
 
