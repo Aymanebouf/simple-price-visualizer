@@ -83,7 +83,10 @@ export const Calculator = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error from Supabase function:', error);
+        throw error;
+      }
 
       if (data?.suggestedFormula) {
         updateFormula(data.suggestedFormula);
@@ -91,12 +94,14 @@ export const Calculator = () => {
           title: "Formule suggérée",
           description: "La formule a été mise à jour selon votre description.",
         });
+      } else {
+        throw new Error('Aucune suggestion reçue');
       }
     } catch (error) {
       console.error('Error searching formula:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de générer une suggestion pour le moment.",
+        description: error instanceof Error ? error.message : "Impossible de générer une suggestion pour le moment.",
         variant: "destructive",
       });
     } finally {

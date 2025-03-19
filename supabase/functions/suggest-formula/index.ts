@@ -19,6 +19,11 @@ serve(async (req) => {
 
     console.log('Requête reçue:', { query, examples });
 
+    if (!openAIApiKey) {
+      console.error('La clé API OpenAI n\'est pas définie');
+      throw new Error('La clé API OpenAI n\'est pas configurée');
+    }
+
     const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
     Voici quelques exemples de descriptions et leurs formules correspondantes :
     ${examples.map((ex: { description: string; formula: string }) => 
@@ -45,6 +50,12 @@ serve(async (req) => {
         temperature: 0.3,
       }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Erreur OpenAI:', errorData);
+      throw new Error(`Erreur OpenAI: ${errorData.error?.message || 'Erreur inconnue'}`);
+    }
 
     const data = await response.json();
     console.log('Réponse OpenAI reçue:', data);
