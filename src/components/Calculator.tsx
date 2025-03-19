@@ -20,7 +20,35 @@ const EXAMPLE_FORMULAS = [
   { description: "si le prix est entre 100 et 200", formula: "{P:PrixPrestation} >= 100 AND {P:PrixPrestation} <= 200" },
   { description: "volume multiplié par 2", formula: "{P:VolumePrestation} × 2" },
   { description: "poids divisé par 100", formula: "{P:PoidsPrestation} ÷ 100" },
+  { description: "si le poids dépasse 100kg le prix augmente de 10%", formula: "IF {P:PoidsPrestation} > 100 THEN {P:PrixPrestation} × 1.1" },
 ];
+
+// Fonction utilitaire pour trouver une formule de secours
+const findFallbackFormula = (query: string) => {
+  const lowerQuery = query.toLowerCase();
+  
+  // Cherche une correspondance approximative dans les exemples
+  const matchingExample = EXAMPLE_FORMULAS.find(ex => 
+    ex.description.toLowerCase().includes(lowerQuery) || 
+    lowerQuery.includes(ex.description.toLowerCase())
+  );
+  
+  if (matchingExample) return matchingExample.formula;
+  
+  // Si contient "poids" et "prix" et "augmente"
+  if (lowerQuery.includes('poids') && lowerQuery.includes('prix') && lowerQuery.includes('augmente')) {
+    // Extraire les chiffres de la requête
+    const weightMatch = lowerQuery.match(/(\d+)\s*kg/);
+    const percentMatch = lowerQuery.match(/(\d+)\s*%/);
+    
+    const weight = weightMatch ? parseInt(weightMatch[1]) : 100;
+    const percent = percentMatch ? (1 + parseInt(percentMatch[1])/100) : 1.1;
+    
+    return `IF {P:PoidsPrestation} > ${weight} THEN {P:PrixPrestation} × ${percent}`;
+  }
+  
+  return null;
+};
 
 export const Calculator = () => {
   const [activeSelector, setActiveSelector] = useState<SelectorType>('none');
@@ -95,15 +123,40 @@ export const Calculator = () => {
           description: "La formule a été mise à jour selon votre description.",
         });
       } else {
-        throw new Error('Aucune suggestion reçue');
+        // Recherche d'une formule de secours
+        const fallbackFormula = findFallbackFormula(searchQuery);
+        
+        if (fallbackFormula) {
+          updateFormula(fallbackFormula);
+          toast({
+            title: "Suggestion approximative",
+            description: "Une formule approximative a été générée.",
+            variant: "default",
+          });
+        } else {
+          throw new Error('Aucune suggestion reçue');
+        }
       }
     } catch (error) {
       console.error('Error searching formula:', error);
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Impossible de générer une suggestion pour le moment.",
-        variant: "destructive",
-      });
+      
+      // Deuxième tentative avec la formule de secours
+      const fallbackFormula = findFallbackFormula(searchQuery);
+      
+      if (fallbackFormula) {
+        updateFormula(fallbackFormula);
+        toast({
+          title: "Suggestion de secours",
+          description: "Une formule a été générée localement en mode secours.",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Impossible de générer une suggestion pour le moment.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsSearching(false);
     }

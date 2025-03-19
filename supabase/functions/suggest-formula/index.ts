@@ -25,13 +25,27 @@ serve(async (req) => {
       throw new Error('La clé API OpenAI n\'est pas configurée dans les secrets Supabase');
     }
 
-    const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
+    // Amélioration du prompt pour mieux guider l'IA vers le résultat attendu
+    const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques pour un logiciel de tarification.
+    
     Voici quelques exemples de descriptions et leurs formules correspondantes :
     ${examples.map((ex: { description: string; formula: string }) => 
       `Description: "${ex.description}" => Formule: "${ex.formula}"`
     ).join('\n')}
     
-    À partir de ces exemples, génère la formule correspondant à cette description : "${query}"
+    Pour la description suivante : "${query}"
+    
+    Génère une formule précise qui utilise la syntaxe suivante:
+    - Utilise {P:NomParametre} pour les paramètres
+    - Pour les conditions: IF condition THEN résultat
+    - Pour les opérations arithmétiques: +, -, ×, ÷
+    - Pour les comparaisons: >, <, >=, <=, =, <>
+    - Pour les opérateurs logiques: AND, OR
+    
+    Par exemple:
+    - Pour "si le poids dépasse 100kg le prix augmente de 10%" => "IF {P:PoidsPrestation} > 100 THEN {P:PrixPrestation} × 1.1"
+    - Pour "si volume supérieur à 2m3 et poids inférieur à 500kg" => "{P:VolumePrestation} > 2 AND {P:PoidsPrestation} < 500"
+    
     Retourne uniquement la formule, sans explications.`;
 
     console.log('Envoi de la requête à OpenAI avec la nouvelle clé API...');
@@ -45,10 +59,11 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.' },
+          { role: 'system', content: 'Tu es un assistant spécialisé dans la création de formules logiques et mathématiques pour logiciels de tarification.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.3,
+        temperature: 0.2, // Réduit pour des réponses plus cohérentes
+        max_tokens: 200,  // Augmenté pour des formules plus complètes
       }),
     });
 
@@ -62,13 +77,20 @@ serve(async (req) => {
     console.log('Réponse OpenAI reçue:', data);
 
     const suggestedFormula = data.choices[0].message.content.trim();
+    
+    if (!suggestedFormula) {
+      throw new Error('Aucune formule n\'a été générée par OpenAI');
+    }
 
     return new Response(JSON.stringify({ suggestedFormula }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
     console.error('Error in suggest-formula function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      suggestedFormula: null 
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
