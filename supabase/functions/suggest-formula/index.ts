@@ -21,7 +21,7 @@ serve(async (req) => {
 
     if (!openAIApiKey) {
       console.error('La clé API OpenAI n\'est pas définie');
-      throw new Error('La clé API OpenAI n\'est pas configurée');
+      throw new Error('La clé API OpenAI n\'est pas configurée dans les secrets Supabase');
     }
 
     const prompt = `Tu es un assistant spécialisé dans la création de formules logiques et mathématiques.
@@ -33,7 +33,7 @@ serve(async (req) => {
     À partir de ces exemples, génère la formule correspondant à cette description : "${query}"
     Retourne uniquement la formule, sans explications.`;
 
-    console.log('Envoi de la requête à OpenAI...');
+    console.log('Envoi de la requête à OpenAI avec la clé API configurée...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
